@@ -1,82 +1,110 @@
-# Repsol chatbot
-This is an chatbot implementation that can be connected to Skype for Business
+# Virtual Assistant
 
-## Project
-The project is a implementation to demonstrate a desired architecture of CONVERSE components using the latest tensforflow embeddings
+Chatbot platform with a modular microservices architecture, connectable to Skype for Business. Built with Rasa Core, IBM Watson, and custom NLP components using TensorFlow embeddings.
 
-## How to start
+## Architecture
 
-Requirements - Docker
+The system follows a CONVERSE component pattern with independent, Docker-containerized services:
 
-### First Step
-Build core and enterprise images
-
-```sh
-cd core/business
-docker build -t core/business_logic:init .
-cd ..
-cd core/confidence
-docker build -t core/confidence_controller:init .
-cd ..
-cd core/configuration
-docker build -t core/configuration_service:init .
-cd ..
-cd core/context
-docker build -t core/context_manager:init .
-cd ..
-cd core/dialog
-docker build -t core/dialog_manager:init .
-cd ..
-cd core/memory
-docker build -t core/memory_manager:init .
-cd ..
-cd core/response
-docker build -t core/response_manager:init .
-cd ..
-cd core/security
-docker build -t core/security_service:init .
-cd ..
-cd enterprise/rasa
-docker build -t enterprise/rasa_core:init .
-cd ..
-cd enterprise/rasa/usecase/callcenter/nlg
-docker build -t enterprise/rasa_core/nlg:init .
-cd ..
-cd enterprise/rasa/usecase/callcenter/actions/
-docker build -t enterprise/rasa_core/action_server:init .
-cd ..
-cd enterprise/rpa
-docker build -t enterprise/rpa:init .
-cd ..
-cd enterprise/sap
-docker build -t enterprise/sap:init .
-cd ..
-cd enterprise/watson
-docker build -t enterprise/watson:init .
-cd ..
-cd ..
-cd deploy/docker
-docker-compose build
-docker-compose up
+```
+┌─────────────────────────────────────────────┐
+│                  Interface                   │
+├──────────┬──────────┬──────────┬────────────┤
+│ Security │ Context  │ Dialog   │ Confidence │
+│ Manager  │ Manager  │ Manager  │ Controller │
+├──────────┴──────────┴──────────┴────────────┤
+│            Configuration Service             │
+├──────────┬──────────┬──────────┬────────────┤
+│  Rasa    │  Watson  │   SAP    │    RPA     │
+│  Core    │ Assistant│ Connector│  Service   │
+├──────────┴──────────┴──────────┴────────────┤
+│         MongoDB (Tracker Store)              │
+└─────────────────────────────────────────────┘
 ```
 
-### Traning
-Models for Rasa-Core are not pre-trained,
+## Project Structure
 
-To train
-```sh
-docker-compose up
-docker exec -it enterprise/rasa_core:init bash
-python -m rasa_core.train -s data/stories.md -d domain.yml -o models/dialogue --debug
+```
+├── core/                  # Core platform services
+│   ├── business/          # Business logic engine
+│   ├── confidence/        # Response confidence scoring
+│   ├── configuration/     # Centralized config service
+│   ├── context/           # Conversation context manager
+│   ├── dialog/            # Dialog flow manager
+│   ├── memory/            # Memory/state manager
+│   ├── response/          # Response generation
+│   └── security/          # Auth and security
+├── enterprise/            # Enterprise integrations
+│   ├── rasa/              # Rasa Core + NLU
+│   ├── watson/            # IBM Watson Assistant
+│   ├── sap/               # SAP connector
+│   └── rpa/               # Robotic Process Automation
+├── interface/             # Frontend interface
+└── deploy/                # Docker deployment configs
 ```
 
-## Run chatbot
-```sh
-docker exec -it enterprise/rasa_core:init bash
-python -m rasa_core.run -d models/dialogue -o logs/rasa_core.log --endpoints endpoints.yml --port 5005
-python -m rasa_core_sdk.endpoint --actions actions
+## Tech Stack
+
+- **Language:** Python 3.6+
+- **NLP:** Rasa Core, TensorFlow
+- **Enterprise:** IBM Watson, SAP
+- **Database:** MongoDB
+- **Deployment:** Docker, Docker Compose
+- **Interface:** Skype for Business
+
+## Prerequisites
+
+- Docker & Docker Compose
+- Python 3.6+
+
+## Quick Start
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aifriend/virtual_assistant.git
+   cd virtual_assistant
+   ```
+
+2. Copy the environment file and set your credentials:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual credentials
+   ```
+
+3. Build and run:
+   ```bash
+   docker-compose -f 0-docker-compose.yml build
+   docker-compose -f 0-docker-compose.yml up -d
+   ```
+
+4. Train the Rasa model:
+   ```bash
+   make clean-model
+   docker exec -it rasa_core bash -c "python -m rasa_core.train ..."
+   ```
+
+## Configuration
+
+All services share a centralized configuration through the `configuration_service`. Copy `config.py` to all modules:
+
+```bash
+make copy-config
 ```
 
+## Useful Commands
 
-#### Note
-Draft subject to modifications
+```bash
+make clean-upload    # Clean project for production
+make clean-logs      # Remove all log files
+make clean-model     # Remove trained models
+make clean-mongo     # Reset MongoDB data
+make show-process    # Show active network ports
+```
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Jose** — [@aifriend](https://github.com/aifriend)

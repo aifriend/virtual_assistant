@@ -24,9 +24,9 @@ services:
       - 27017:27017
       - 27027:27027
     environment:
-      MONGO_INITDB_ROOT_USERNAME: rasa
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: rasa
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./deploy/docker/rasa_core/tracker_store/data/db:/data/db
 
