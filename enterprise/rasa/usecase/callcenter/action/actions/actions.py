@@ -804,7 +804,7 @@ class ActionDefaultAskAffirmation(Action):
             dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]
-            ) -> List['Event']:
+            ) -> List[Any]:
 
         intent_ranking = tracker.latest_message.get('intent_ranking', [])
         if len(intent_ranking) > 1:
@@ -845,7 +845,7 @@ class ActionDefaultAskAffirmation(Action):
             dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]
-            ) -> List['Event']:
+            ) -> List[Any]:
 
         intent_ranking = tracker.latest_message.get('intent_ranking', [])
         if len(intent_ranking) > 1:
@@ -880,7 +880,7 @@ class ActionDefaultAskRephrase(Action):
             dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]
-            ) -> List['Event']:
+            ) -> List[Any]:
 
         dispatcher.utter_template("utter_ask_rephrase", tracker, silent_fail=True)
 
@@ -897,7 +897,7 @@ class ActionDefaultCoreFallback(Action):
             dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]
-            ) -> List['Event']:
+            ) -> List[Any]:
 
         dispatcher.utter_template('utter_default', tracker, silent_fail=False)
 
@@ -914,7 +914,7 @@ class ActionDefaultNluFallback(Action):
             dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]
-            ) -> List['Event']:
+            ) -> List[Any]:
 
         # Fallback caused by TwoStageFallbackPolicy
         if (len(tracker.events) >= 4 and

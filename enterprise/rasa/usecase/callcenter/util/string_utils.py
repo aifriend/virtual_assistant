@@ -12,7 +12,7 @@ def sanitize_html_entities(text):
         unicode text
     """
 
-    return unicode(BeautifulSoup(text, "html.parser"))
+    return str(BeautifulSoup(text, "html.parser"))
 
 
 def sanitize_spanish_string(text):
@@ -40,5 +40,5 @@ def remove_accent_marks(text):
         String without spanish accents
     """
 
-    s = ''.join((c for c in unicodedata.normalize('NFD', unicode(text)) if unicodedata.category(c) != 'Mn'))
+    s = ''.join((c for c in unicodedata.normalize('NFD', str(text)) if unicodedata.category(c) != 'Mn'))
     return s.decode()
