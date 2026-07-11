@@ -89,7 +89,7 @@ class RasaContext:
         if self.entities.__len__() > 0:
             request = request + "{"
             for i in range(len(self.entities)):
-                if i is not 0:
+                if i != 0:
                     request += ", "
                 val = self.entities[i].value
                 try:
